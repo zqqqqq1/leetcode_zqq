@@ -1,3 +1,223 @@
+[**1.Two Sum**](https://leetcode.com/problems/two-sum/)
+
+> Given an array of integers, return indices of the two numbers such
+> that they add up to a specific target.
+> You may assume that each input would have exactly one solution, and
+> you may not use the same element twice.
+> Example:
+> Given nums = [2, 7, 11, 15], target = 9,
+> Because nums[0] + nums[1] = 2 + 7 = 9, return [0, 1].
+
+给出一个数组和一个target 找出数组中是否存在两个数相加为target，相同的数也可以满足。
+
+**思路**：
+采用hashtable的思想，因为数组中必然存在满足条件的两个数。那么遍历一次数组，每次将数组中的数放入map中时判断target - nums[i]在map中是否存在。
+如果存在：就得到了满足条件的值。
+如果不存在：那么将map[nums[i]] = i;用于保存数字原来的index位置。
+
+c++
+
+```c++
+    vector<int> twoSum(vector<int>& nums, int target) {
+        unordered_map<int,int>m;
+        for(int i=0;i<nums.size();i++){
+            auto it = m.find(target - nums[i]);
+            if(it!=m.end()){
+                return {it->second,i};
+            }
+            m[nums[i]] = i ;
+        }
+        return {};
+    }
+```
+
+Python
+
+```python
+    def twoSum(self, nums, target):
+        """
+        :type nums: List[int]
+        :type target: int
+        :rtype: List[int]
+        """
+        m = {}
+        for i,num in enumerate(nums):
+            if target - num in m:
+                return [m[target - num] , i]
+            else:
+                m[num] = i
+        return []
+```
+
+[**7. Reverse Integer**](https://leetcode.com/problems/reverse-integer/)
+
+> Given a 32-bit signed integer, reverse digits of an integer.
+>
+> **Example 1:**
+>
+> ```
+> Input: 123
+> Output: 321
+> ```
+>
+> **Example 2:**
+>
+> ```
+> Input: -123
+> Output: -321
+> ```
+>
+> **Example 3:**
+>
+> ```
+> Input: 120
+> Output: 21
+> ```
+
+给出一个int类型数字，你需要将其反转，不能有0开头。
+
+**思路**：非常简单的思想，但是需要小心overflows
+
+颠倒数字    
+
+```c++
+res = res*10 + x%10 
+x /=10
+```
+
+
+
+c++
+
+```c++
+    int reverse(int x) {
+        if(x==0)return 0;
+        long long res = 0;
+        while(x!=0){
+            res = res*10+x%10;
+            if(res>INT32_MAX||res<INT32_MIN)
+                return 0;
+            x/=10;
+        }
+        return int(res);
+    }
+```
+
+Python
+
+```python
+    def reverse(self, x):
+        """
+        :type x: int
+        :rtype: int
+        """
+        sign = 1
+        if x<0:
+            sign = -1
+        x = abs(x)
+        num = 0
+        while x!=0:
+            num = num*10 + x%10
+            x = x//10
+            if num <(-2**31) or num>(2**31-1):
+                return 0
+        return num * sign
+```
+
+[**9. Palindrome Number**](https://leetcode.com/problems/palindrome-number/)
+
+> Determine whether an integer is a palindrome. An integer is a palindrome when it reads the same backward as forward.
+>
+> **Example 1:**
+>
+> ```
+> Input: 121
+> Output: true
+> ```
+>
+> **Example 2:**
+>
+> ```
+> Input: -121
+> Output: false
+> Explanation: From left to right, it reads -121. From right to left, it becomes 121-. Therefore it is not a palindrome.
+> ```
+>
+> **Example 3:**
+>
+> ```
+> Input: 10
+> Output: false
+> Explanation: Reads 01 from right to left. Therefore it is not a palindrome.
+> ```
+
+给出一个int类型数字，你需要判断是否为回文数，即左读，右读都一样
+
+**思路**：不转换成string类型 ，直接进行判断。
+
+- 1.负数，可以被0整除的数肯定不可能满足要求
+- 2.直接根据加和思想，倒序加和，判断是否相等。
+
+颠倒数字    
+
+```c++
+res = res*10 + x%10 
+x /=10
+```
+
+
+
+c++   **1.缺点是采用了额外的空间  long long **如果直接采用int，则会有overflows的风险
+
+```c++
+    bool isPalindrome(int x) {
+        if(x<0)return false;
+        long long sum = 0,tem = x;
+        while(tem>0){
+            sum = sum*10+tem%10;
+            tem/=10;
+        }
+        //cout<<sum<<" "<<x<<endl;
+        return sum==x;
+    }
+```
+
+C++ 2. **优点是只需要遍历一半的数就可以得到结果了**
+
+```c++
+    bool isPalindrome(int x) {
+        if(x<0||(x!=0&&x%10==0))return false;
+        int sum = 0;
+        while(x>sum){
+            sum = sum*10+x%10;
+            x/=10;
+        }
+        //cout<<sum<<" "<<x<<endl;
+        //为什么要判断x==sum/10呢？
+        //因为有可能数的位数是单数，这时中间的一位就不需要判断了
+        return sum==x ||(x==sum/10);
+    }
+```
+
+Python
+
+```python
+       def isPalindrome(self, x):
+        """
+        :type x: int
+        :rtype: bool
+        """
+        if x<0 or (x!=0 and x%10==0):
+            return False
+        sum = 0
+        while x>sum:
+            sum = sum*10+x%10
+            x = x//10
+        return sum==x or x==sum//10
+```
+
+
+
 ## [**21. Merge Two Sorted Lists**](https://leetcode.com/problems/merge-two-sorted-lists/)
 
 > Merge two sorted linked lists and return it as a new list. The new list should be made by splicing together the nodes of the first two lists.
